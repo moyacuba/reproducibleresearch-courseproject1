@@ -1,0 +1,14 @@
+---
+title: "Reproducible Research Course Project 1"
+author: "Iosvany Moya"
+date: "16 de noviembre de 2016"
+output: html_document
+---
+
+### Read data to variable 'data'
+
+```{r setup, include=FALSE}
+data <- read.csv("activity.csv", na.strings = "NA", colClasses = c("numeric","Date", "numeric"))
+str(data)
+```
+
