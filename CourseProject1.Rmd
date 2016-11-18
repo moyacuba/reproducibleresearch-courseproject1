@@ -5,10 +5,17 @@ date: "16 de noviembre de 2016"
 output: html_document
 ---
 
-### Read data to variable 'data'
-
+### Loading and preprocessing the data
 ```{r setup, include=FALSE}
-data <- read.csv("activity.csv", na.strings = "NA", colClasses = c("numeric","Date", "numeric"))
-str(data)
+library(ggplot2)
+actdat <- read.csv("activity.csv", na.strings = "NA", colClasses = c("numeric","Date", "numeric"))
+str(actdat)
 ```
 
+### What is mean total number of steps taken per day?
+
+1- total number of steps taken per day
+```{r setup, include=FALSE}
+actstepsum <- aggregate(x=actdat[c("steps")], FUN = sum, by = list(Group.date=actdat$date))
+ggplot(actstepsum, aes(x=Group.date, y=steps))+geom_bar(stat="identity")
+```
