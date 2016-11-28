@@ -6,7 +6,8 @@ output: html_document
 ---
 
 ### Loading and preprocessing the data
-```{r setup, include=FALSE}
+1- Code for reading in the dataset and/or processing the data
+```{r setup}
 library(ggplot2)
 actdat <- read.csv("activity.csv", na.strings = "NA", colClasses = c("numeric","Date", "numeric"))
 str(actdat)
@@ -14,8 +15,34 @@ str(actdat)
 
 ### What is mean total number of steps taken per day?
 
-1- total number of steps taken per day
-```{r setup, include=FALSE}
-actstepsum <- aggregate(x=actdat[c("steps")], FUN = sum, by = list(Group.date=actdat$date))
-ggplot(actstepsum, aes(x=Group.date, y=steps))+geom_bar(stat="identity")
+2- total number of steps taken per day
+```{r totals per day}
+actstepsum <- tapply(actdat$steps, actdat$date, sum, na.rm=TRUE)
+qplot(actstepsum, geom="histogram", binwidth=500)
+```
+
+3- Mean and median number of steps taken each day
+```{r mean and median per day}
+mean(actstepsum)
+median(actstepsum)
+```
+
+### What is the average daily activity pattern?
+4- Time series plot of the average number of steps taken
+```{r average daily activity pattern}
+actstepavg <- aggregate(x=list(meanSteps=actdat$steps), by=list(interval=actdat$interval), FUN=mean, na.rm=TRUE)
+ggplot(data=actstepavg, aes(x=interval, y=meanSteps)) + geom_line()
+
+```
+5- The 5-minute interval that, on average, contains the maximum number of steps
+```{r max interval}
+actstepavg[which.max(actstepavg$meanSteps),'interval']
+```
+
+### Imputing missing values
+6- Code to describe and show a strategy for imputing missing data
+
+```{r count of missing values}
+length(which(is.na(actdat$steps)))
+actstepmed <- aggregate(x=list(medianSteps=actdat$steps), by=list(interval=actdat$interval), FUN=median, na.rm=TRUE)
 ```
