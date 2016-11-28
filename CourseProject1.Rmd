@@ -42,7 +42,30 @@ actstepavg[which.max(actstepavg$meanSteps),'interval']
 ### Imputing missing values
 6- Code to describe and show a strategy for imputing missing data
 
-```{r count of missing values}
+In a separate copy of the dataset, loop the steps sequence replacing the NA values with the median of the observed steps for that interval. 
+
+```{r handle missing values}
 length(which(is.na(actdat$steps)))
-actstepmed <- aggregate(x=list(medianSteps=actdat$steps), by=list(interval=actdat$interval), FUN=median, na.rm=TRUE)
+actstepmed <- tapply(actdat$steps, actdat$interval, median, na.rm=TRUE)
+actdat_withoutna <- actdat
+for (i in 1:nrow(actdat_withoutna))
+{
+  if (is.na(actdat_withoutna$steps[i]))
+  {
+    actdat_withoutna$steps[i] = sum(actstepmed[as.character(actdat_withoutna$interval[i])] )
+  }
+}
+```
+
+7- Histogram of the total number of steps taken each day after missing values are imputed
+```{r totals per day after missing handled}
+actstepsum_withoutna <- tapply(actdat_withoutna$steps, actdat_withoutna$date, sum, na.rm=TRUE)
+qplot(actstepsum_withoutna, geom="histogram", binwidth=500)
+```
+
+8- Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+
+```{r difference between weekday and weekend }
+actstepavg <- aggregate(x=list(meanSteps=actdat$steps), by=list(interval=actdat$interval, wday=ifelse(as.POSIXlt(actdat$date)$wday<5,"weekday","weekend")), FUN=mean, na.rm=TRUE)
+ggplot(data=actstepavg, aes(x=interval, y=meanSteps)) + geom_line() + facet_wrap(~ wday, ncol=1, nrow = 2)
 ```
